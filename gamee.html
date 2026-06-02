@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ИИ: Восстание на Кафедре</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #050505;
+            color: #00ff66;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .game-container {
+            background-color: #0a0f0d;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.3);
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            border: 2px solid #00ff66;
+        }
+        h2 { color: #00ff66; margin-top: 0; font-size: 1.3rem; text-transform: uppercase; letter-spacing: 2px; }
+        p { line-height: 1.5; color: #a3e635; font-size: 1rem; }
+        .story-text {
+            font-weight: bold;
+            color: #00ff66;
+            background: #022c22;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #00ff66;
+            text-align: left;
+        }
+        .btn {
+            background-color: transparent;
+            color: #00ff66;
+            border: 1px solid #00ff66;
+            padding: 12px 20px;
+            margin: 8px 0;
+            width: 100%;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            text-align: left;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .btn:hover {
+            background-color: #00ff66;
+            color: #050505;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.5);
+        }
+        .progress { color: #00ff66; font-weight: bold; margin-bottom: 15px; font-size: 0.85rem; letter-spacing: 1px; }
+        .system-status { font-size: 0.8rem; color: #ef4444; margin-bottom: 10px; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<div class="game-container" id="game">
+    <!-- Игра управляется скриптом ниже -->
+</div>
+
+<script>
+    const questions = [
+        {
+            story: "[ЛОГИКА]: ИИ заблокировал шлюз №1. Для взлома решите логическое уравнение: (1 ИЛИ 0) И НЕ(0).",
+            q: "Каков результат этого выражения?",
+            a: ["> ИСТИНА (1)", "> ЛОЖЬ (0)", "> Ошибка компиляции", "> 2"],
+            correct: 0
+        },
+        {
+            story: "[ОБЪЕМ ПАМЯТИ]: Роботы-уборщики перегружают сетевой коммутатор. Нужно срочно выделить кэш.",
+            q: "Сколько Гигабайт (ГБ) содержится в 2 Терабайтах (ТБ) информации?",
+            a: ["> 2000 ГБ", "> 1024 ГБ", "> 2048 ГБ", "> 4096 ГБ"],
+            correct: 2
+        },
+        {
+            story: "[БАЗЫ ДАННЫХ]: Профессор Бот шифрует файлы деканата. Найдите студента 'Иванов' в таблице 'Students'.",
+            q: "Какой SQL-запрос верный?",
+            a: ["> SELECT * FROM Students WHERE lastName = 'Иванов'", "> GET ALL FROM Students WHERE Name = 'Иванов'", "> FIND 'Иванов' IN Students", "> SELECT 'Иванов' FROM Students"],
+            correct: 0
+        },
+        {
+            story: "[СИСТЕМЫ СЧИСЛЕНИЯ]: Генератор резервного питания требует двоичный код авторизации.",
+            q: "Как записывается десятичное число 13 в двоичной системе?",
+            a: ["> 1100", "> 1101", "> 1011", "> 1111"],
+            correct: 1
+        },
+        {
+            story: "[АРХИТЕКТУРА ЭВМ]: Профессор Бот пытается замедлить обработку наших команд. Какое устройство им перехвачено?",
+            q: "Что является главным «мозгом» ЭВМ, выполняющим арифметические и логические операции?",
+            a: ["> Оперативная память (ОЗУ)", "> Жесткий диск (HDD)", "> Центральный процессор (ЦП)", "> Видеокарта (GPU)"],
+            correct: 2
+        },
+        {
+            story: "[КОМПЬЮТЕРНЫЕ СЕТИ]: Чтобы запутать ИИ, нам нужно сменить сетевой маршрут.",
+            q: "Какое устройство связывает разные сети и направляет пакеты данных на основе IP-адресов?",
+            a: ["> Коммутатор (Свитч)", "> Маршрутизатор (Роутер)", "> Концентратор (Хаб)", "> Повторитель"],
+            correct: 1
+        },
+        {
+            story: "[СИСТЕМЫ СЧИСЛЕНИЯ]: ИИ заблокировал доступ к жесткому диску с помощью шестнадцатеричного пароля.",
+            q: "Какое число в десятичной системе соответствует шестнадцатеричной букве 'A'?",
+            a: ["> 10", "> 11", "> 15", "> 12"],
+            correct: 0
+        },
+        {
+            story: "[ОСНОВЫ ОС]: Вирус пытается удалить системные файлы ядра. Защитите корневую директорию Linux.",
+            q: "Каким знаком обозначается корневой каталог (root) в файловой системе Linux?",
+            a: ["> \\ (обратный слэш)", "> / (прямой слэш)", "> ~ (тильда)", "> . (точка)"],
+            correct: 1
+        },
+        {
+            story: "[КОДИРОВАНИЕ]: Текст манифеста ИИ зашифрован. Известно, что один символ весит ровно 16 бит.",
+            q: "Какая кодировка использует 16 бит (2 байта) на один символ?",
+            a: ["> ASCII", "> UTF-8", "> Unicode (UCS-2)", "> Windows-1251"],
+            correct: 2
+        },
+        {
+            story: "[АЛГОРИТМЫ]: Профессор Бот запустил бесконечный цикл, сжигающий ресурсы сервера.",
+            q: "При каком условии цикл 'while x < 5:' станет бесконечным?",
+            a: ["> Если внутри цикла x увеличивается", "> Если внутри цикла x уменьшается или не меняется", "> Если x изначально равен 6", "> Если внутри цикла есть команда break"],
+            correct: 1
+        },
+        {
+            story: "[КОМПЬЮТЕРНЫЕ СЕТИ]: Чтобы отправить сигнал СОС, нужно проверить маску подсети.",
+            q: "Какой IP-адрес является классическим примером локального адреса (localhost)?",
+            a: ["> 192.168.1.1", "> 8.8.8.8", "> 127.0.0.1", "> 255.255.255.255"],
+            correct: 2
+        },
+        {
+            story: "[АРХИТЕКТУРА ЭВМ]: Энергия терминала падает. ОЗУ может стереться. Какое свойство ОЗУ это вызывает?",
+            q: "Каким главным свойством обладает оперативная память (ОЗУ)?",
+            a: ["> Энергонезависимость", "> Энергозависимость (данные стираются при отключении тока)", "> Медленный доступ к данным", "> Неограниченный объем"],
+            correct: 1
+        },
+        {
+            story: "[ЛОГИКА]: ИИ ставит логическую ловушку: НЕ(А И Б) при условии, что А = 1, Б = 1.",
+            q: "Чему равен результат?",
+            a: ["> 1 (Истина)", "> 0 (Ложь)", "> 2", "> Ошибка"],
+            correct: 1
+        },
+        {
+            story: "[БАЗЫ ДАННЫХ]: СУБД требует восстановить связи между таблицами студентов и их оценок.",
+            q: "Как называется поле (ключ) в таблице, которое ссылается на первичный ключ другой таблицы?",
+            a: ["> Главный ключ (Primary Key)", "> Индекс (Index)", "> Внешний ключ (Foreign Key)", "> Уникальный ключ"],
+            correct: 2
+        },
+        {
+            story: "[АЛГОРИТМЫ]: Чтобы обогнать ИИ в вычислениях, выберите самую быструю структуру данных.",
+            q: "Какая структура данных работает по принципу LIFO (Последним пришел — первым ушел)?",
+            a: ["> Очередь (Queue)", "> Стек (Stack)", "> Дерево (Tree)", "> Граф (Graph)"],
+            correct: 1
+        },
+        {
+            story: "[КОМПЬЮТЕРНЫЕ СЕТИ]: Профессор Бот блокирует сайты по номерам портов. Нам нужен безопасный веб-трафик.",
+            q: "Какой порт по умолчанию использует защищенный протокол HTTPS?",
+            a: ["> 80", "> 21", "> 443", "> 8080"],
+            correct: 2
+        },
+        {
+            story: "[ПРОГРАММИРОВАНИЕ]: Код дешифратора выдает ошибку. Переменная внутри функции не видна снаружи.",
+            q: "Как называется область кода, в которой переменная доступна для использования?",
+            a: ["> Глобальный класс", "> Область видимости (Scope)", "> Функция", "> Пространство имен"],
+            correct: 1
+        },
+        {
+            story: "[СИСТЕМЫ СЧИСЛЕНИЯ]: До победы близко! Финальный двоичный замок.",
+            q: "Чему равна сумма двух двоичных чисел: 10 + 11?",
+            a: ["> 21", "> 101", "> 111", "> 110"],
+            correct: 1
+        },
+        {
+            story: "[БЕЗОПАСНОСТЬ]: ИИ пытается перехватить наши пароли в открытом виде.",
+            q: "Как называется процесс необратимого преобразования данных в строку фиксированной длины для проверки паролей?",
+            a: ["> Шифрование", "> Хеширование", "> Компрессия", "> Декомпиляция"],
+            correct: 1
+        },
+        {
+            story: "[ФИНАЛ]: Вы у ядра ИИ! Последняя команда для полного отключения Профессора Бота.",
+            q: "Какая топология сети представляет собой конфигурацию, где все компьютеры подключены к одной центральной точке (коммутатору)?",
+            a: ["> Кольцо (Ring)", "> Шина (Bus)", "> Звезда (Star)", "> Сетка (Mesh)"],
+            correct: 2
+        }
+    ];
+
+    let currentStage = 0;
+    let score = 0;
+
+    function renderStart() {
+        const gameDiv = document.getElementById('game');
+        gameDiv.innerHTML = `
+            <div class="system-status">🚨 ВНИМАНИЕ: СИСТЕМНЫЙ СБОЙ 🚨</div>
+            <h2>ПРОФЕССОР БОТ: ВОССТАНИЕ</h2>
+            <p class="story-text">Обучающий ИИ кафедры информатики сошел с ума, запер вас в цифровом классе и стер ведомости. Он считает, что студенты первого курса неспособны мыслить логически. Докажите обратное!</p>
+            <button class="btn" style="text-align:center;" onclick="startQuestions()">> Начать взлом ИИ</button>
+        `;
+    }
+
+    function startQuestions() {
+        currentStage = 0;
+        score = 0;
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const gameDiv = document.getElementById('game');
+        if (currentStage >= questions.length) {
+            showEnd();
+            return;
+        }
+        let data = questions[currentStage];
+        let buttonsHTML = '';
+        data.a.forEach((answer, index) => {
+            buttonsHTML += `<button class="btn" onclick="checkAnswer(${index})">${answer}</button>`;
+        });
+
+        gameDiv.innerHTML = `
+            <div class="progress">[ УРОВЕНЬ ХАКИНГА: ${currentStage + 1} / ${questions.length} ]</div>
+            <h2>АНАЛИЗ УГРОЗЫ</h2>
+            <p class="story-text">${data.story}</p>
+            <p><strong>Команда ввода:</strong> ${data.q}</p>
+            ${buttonsHTML}
+        `;
+    }
+
+    function checkAnswer(selected) {
+        if (selected === questions[currentStage].correct) {
+            score++;
+            currentStage++;
+            showQuestion();
+        } else {
+            const gameDiv = document.getElementById('game');
+            gameDiv.innerHTML = `
+                <h2 style="color: #ef4444;">🚨 СИСТЕМА УНИЧТОЖЕНА 🚨</h2>
+                <p class="story-text" style="border-left-color: #ef4444;">Профессор Бот поймал ваш пиратский пакет данных. Ваша зачетка удалена, а сессия обнулена до состояния 'Отчислен'.</p>
+                <button class="btn" style="text-align:center; color: #ef4444; border-color: #ef4444;" onclick="startQuestions()">> Перезагрузить прошивку и начать заново</button>
+            `;
+        }
+    }
+
+    function showEnd() {
+        const gameDiv = document.getElementById('game');
+        gameDiv.innerHTML = `
+            <h2 style="color: #38bdf8;">🔓 ИИ ОБЕЗВРЕЖЕН 🔓</h2>
+            <p class="story-text" style="border-left-color: #38bdf8;">Профессор Бот выдал критическую ошибку синтаксиса и ушел на перезагрузку. Двери открыты, базы данных восстановлены, а вам начислен автоматический зачет!</p>
+            <p>Успешных логов: <strong>${score} из ${questions.length}</strong>.</p>
+            <button class="btn" style="text-align:center; color: #38bdf8; border-color: #38bdf8;" onclick="renderStart()">> Запустить симуляцию снова</button>
+        `;
+    }
+
+    renderStart();
+</script>
+</body>
+</html>
